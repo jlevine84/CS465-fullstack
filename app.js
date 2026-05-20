@@ -12,7 +12,7 @@ var usersRouter = require('./app_server/routes/users');
 var travelRouter = require('./app_server/routes/travel')
 var roomsRouter = require('./app_server/routes/rooms')
 var newsRouter = require('./app_server/routes/news')
-var mealsRouter = require('./app_server/routess/meals')
+var mealsRouter = require('./app_server/routes/meals')
 var aboutRouter = require('./app_server/routes/about')
 
 // Init express
