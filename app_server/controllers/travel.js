@@ -1,10 +1,41 @@
-// Var init
-var fs = require('fs')
-var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'))
+// // Var init
 
-/* Get travel view */
-const travel = (req, res) => {
-    res.render('travel', {title: 'Travlr Getaways', trips})
+// var fs = require('fs')
+// var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'))
+
+const tripsEndpoint = "http://localhost:3000/api/trips"
+const options = {
+    method: "GET",
+    headers: {
+        "Accept": "application/json"
+    }
+}
+
+/* Get travel view with API json data */
+const travel = async function(req, res, next) {
+    // Use the end point and await a response
+    await fetch(tripsEndpoint, options)
+        .then((res)=> res.json())
+        .then((json)=> {
+            // If response successful, check for empty array
+            let message = null
+
+            if (!(json instanceof Array)) {
+                message = "API lookup error, empty array"
+                json = []
+            } else {
+                if (!json.length) {
+                    message = "No trips exist in DB!"
+                }
+            }
+
+            res.render("travel", { title: "Travlr Getaways", trips: json, message})
+        })
+        .catch((err)=> {
+            // Error encountered
+            console.log(err.message)
+            res.status(500).send(err.message)
+        })
 }
 
 module.exports = { travel }
