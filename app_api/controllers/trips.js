@@ -46,4 +46,31 @@ const tripsFindByCode = async(req, res)=> {
     }
 }
 
-module.exports = { tripsList, tripsFindByCode }
+// POST endpoint: /trips - Add a new trip
+const tripsAddTrip = async(req, res) => {
+    try {
+        const newTrip = new Trip({
+            code: req.body.code,
+            name: req.body.name,
+            length: req.body.length,
+            start: req.body.start,
+            resort: req.body.resort,
+            perPerson: req.body.perPerson,
+            image: req.body.image,
+            description: req.body.description
+        });
+
+        // Save to MongoDB
+        const savedTrip = await newTrip.save();
+        
+        // Return 201 Created status with the newly saved document
+        return res.status(201).json(savedTrip);
+
+    } catch (err) {
+        // If validation fails or database hits a snag, catch the real error here safely
+        console.error("Error creating trip:", err);
+        return res.status(400).json({ error: err.message });
+    }
+}
+
+module.exports = { tripsList, tripsFindByCode, tripsAddTrip }

@@ -5,9 +5,12 @@ const router = express.Router()
 const tripsController = require("../controllers/trips")
 
 // Get route: All trips
-router.route("/trips").get(tripsController.tripsList)
+router.route("/trips")
+    .get(tripsController.tripsList)
+    .post(tripsController.tripsAddTrip)
 
 // Get Route: Single trip by code
-router.route("/trips/:tripCode").get(tripsController.tripsFindByCode)
+router.route("/trips/:tripCode")
+    .get(tripsController.tripsFindByCode)
 
 module.exports = router
