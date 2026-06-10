@@ -20,4 +20,12 @@ export class TripData {
     addTrip(formData: Trip): Observable<Trip> {
         return this.http.post<Trip> (this.url, formData)
     }
+
+    getTrip(tripCode: string): Observable<Trip[]> {
+        return this.http.get<Trip[]> (this.url + "/" + tripCode)
+    }
+
+    updateTrip(formData: Trip): Observable<Trip> {
+        return this.http.put<Trip> (this.url + "/" + formData.code, formData)
+    }
 }

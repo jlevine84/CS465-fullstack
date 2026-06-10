@@ -12,5 +12,6 @@ router.route("/trips")
 // Get Route: Single trip by code
 router.route("/trips/:tripCode")
     .get(tripsController.tripsFindByCode)
+    .put(tripsController.tripsUpdateTrip)
 
 module.exports = router
