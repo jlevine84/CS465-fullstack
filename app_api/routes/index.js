@@ -11,7 +11,7 @@ router.route("/register")
 
 // User login authentication
 router.route("/login")
-    .post(authController.login)
+    .post(authController.login) // POST: Login a user
 
 
 // Trip Routes
