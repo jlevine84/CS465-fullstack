@@ -2,8 +2,9 @@
 const mongoose = require("mongoose")
 require("../models/user") // Ensures schema is loaded
 const User = mongoose.model("users") // Unified model reference
+const passport = require("passport")
 
-// POST endpoint: /register - register a new user
+// POST method for /register endpoint - register a new user
 const register = async (req, res) => {
     try {
         // Validate request body to ensure all required params are present
@@ -40,4 +41,33 @@ const register = async (req, res) => {
     }
 }
 
-module.exports = { register }
+// POST method for /login endpoint - Handle login of user
+const login = (req, res)=> {
+    try {
+        // Validate request body to ensure all required params are present
+        if (!req.body.email || !req.body.password) {
+            return res.status(400).json({ "message": "All fields required" })
+        }
+
+        // Delegate authentication to passport module
+        passport.authenticate("local", (err, user, info)=> {
+            // If authentication error occurs, return the error
+            if (err) { return res.status(404).json(err) }
+
+            // If auth succeeded, generate a token and return it
+            if (user) { 
+                const token = user.generateJWT()
+                return res.status(200).json({token})
+            }
+
+            // Else, return misc error
+            else { return res.status(401).json(info) }
+        }) (req, res)
+    } catch (err) {
+        // Log error to console and return a server error
+        console.error("Error during user login execution:", err)
+        return res.status(400).json({ "error": err.message })
+    }
+}
+
+module.exports = { register, login }
