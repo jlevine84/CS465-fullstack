@@ -3,6 +3,7 @@ import { TripCard } from '../trip-card/trip-card';
 import { Trip } from "../models/trip"
 import { TripData } from '../services/trip-data';
 import { Router } from "@angular/router"
+import { Authentication } from '../services/authentication';
 
 @Component({
 	selector: 'app-trip-listing',
@@ -15,9 +16,11 @@ export class TripListing implements OnInit {
 	trips: WritableSignal<Trip[]> = signal([])
 	message: string = ""
 
-	constructor(private tripData: TripData, private router: Router) {
-		console.log("trip-listing constructor")
-	}
+	constructor(
+		private tripData: TripData,
+		private router: Router,
+		private authenticationService: Authentication
+	) {}
 
 	public addTrip(): void {
 		this.router.navigate(["add-trip"])
@@ -42,5 +45,9 @@ export class TripListing implements OnInit {
 	ngOnInit(): void {
 		console.log("ngOnInit")
 		this.getStuff()
+	}
+
+	public isLoggedIn() {
+		return this.authenticationService.isLoggedIn();
 	}
 }

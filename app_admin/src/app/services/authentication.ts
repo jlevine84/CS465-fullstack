@@ -4,6 +4,10 @@ import { User } from '../models/user';
 import { AuthResponse } from '../models/auth-response';
 import { TripData } from './trip-data';
 
+@Injectable({
+	providedIn: 'root' 
+})
+
 // Define Auth service
 export class Authentication {
     // Storage and service access setup

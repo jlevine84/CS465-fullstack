@@ -1,11 +1,11 @@
-<!-- @if (message) {
-  <p class="alert alert-info">{{ message }}</p>
-} -->
-<div>
-    <button (click)="addTrip()" class="btn btn-info">Add Trip</button>
-</div>
+@if (isLoggedIn()) {
+    <div class="mb-3">
+        <button (click)="addTrip()" class="btn btn-info">Add Trip</button>
+    </div>
+}
+
 <div class="row">
     @for (t of trips(); track t.code) {
         <app-trip-card [trip]="t" class="col-md-4 mb-4" />
     }
-</div>    
+</div>
