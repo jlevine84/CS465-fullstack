@@ -1,8 +1,5 @@
 // // Var init
 
-// var fs = require('fs')
-// var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'))
-
 const tripsEndpoint = "http://localhost:3000/api/trips"
 const options = {
     method: "GET",
@@ -29,7 +26,7 @@ const travel = async function(req, res, next) {
                 }
             }
 
-            res.render("travel", { title: "Travlr Getaways", trips: json, message})
+            res.render("travel", { title: "Travlr Getaways", trips: json, page: "travel", message})
         })
         .catch((err)=> {
             // Error encountered

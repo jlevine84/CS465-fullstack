@@ -38,11 +38,17 @@ var newsRouter = require('./app_server/routes/news')
 var mealsRouter = require('./app_server/routes/meals')
 var aboutRouter = require('./app_server/routes/about')
 var apiRouter = require("./app_api/routes/index")
+var contactRouter = require("./app_server/routes/contact")
 
 // View engine setup
 app.set('views', path.join(__dirname, 'app_server', 'views'))
 handlebars.registerPartials(__dirname + '/app_server/views/partials')
 app.set('view engine', 'hbs')
+
+// HBS helper to make nav responsive
+handlebars.registerHelper("equals", function (arg1, arg2, options) {
+	return (arg1 === arg2) ? options.fn(this): options.inverse(this)
+})
 
 // Bind Routes
 app.use('/', indexRouter)
@@ -53,6 +59,7 @@ app.use('/news', newsRouter)
 app.use('/meals', mealsRouter)
 app.use('/about', aboutRouter)
 app.use('/api', apiRouter) 
+app.use("/contact", contactRouter)
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
