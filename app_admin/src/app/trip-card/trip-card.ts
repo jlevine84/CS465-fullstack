@@ -26,8 +26,4 @@ export class TripCard implements OnInit{
 		localStorage.setItem("tripCode", trip.code)
 		this.router.navigate(["edit-trip"])
 	}
-
-	public isLoggedIn() {
-		return this.authenticationService.isLoggedIn()
-	}
 }
