@@ -1,14 +1,10 @@
-<nav class="navbar navbar-expand navbar-light bg-light">
-    <a class="navbar-brand" href="#"><img src="/assets/images/logo.png"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a class="nav-link active" routerLink="">Trips<span class="sr-only ">(current)</span></a>
-        </div>
-    </div>
-    
+<div class="navbar">
+    <div class="brand"><img src="/assets/images/logo.png"></div>
+    <nav>
+        <a href="#" class="active">Trip Inventory</a>
+        <a href="#">Audit Logs</a>
+        <a href="#">User Management</a>
+    </nav>
     <div class="navbar-end">
         @if (!isLoggedIn()) {
             <a class="nav-item" routerLink="login">
@@ -20,4 +16,4 @@
             </a>
         }
     </div>
-</nav>
+</div>

@@ -1,12 +1,84 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Travlr Getaways Admin</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travlr Getaways Administrative Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f1f5f9; color: #334155; padding: 24px; }
+        
+        /* Page Header */
+        .page-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 22px; color: #0f172a; }
+        .page-header .subtitle { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+        /* App Shell */
+        .app-shell { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+        
+        /* Top Navigation Bar */
+        .navbar { background: #1e293b; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .brand { font-weight: 700; font-size: 16px; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .navbar nav { display: flex; gap: 20px; font-size: 14px; }
+        .navbar nav a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .navbar nav a.active { color: white; font-weight: 600; border-bottom: 2px solid #38bdf8; padding-bottom: 4px; }
+
+        /* Main Workspace Split Layout */
+        .workspace-split { display: grid; grid-template-columns: 1fr 420px; min-height: 680px; }
+        
+        /* Left Column: Cards List & Controls */
+        .inventory-panel { padding: 20px; border-right: 1px solid #e2e8f0; background: #f8fafc; display: flex; flex-direction: column; gap: 16px; }
+        .toolbar { display: flex; gap: 10px; justify-content: space-between; }
+        .toolbar input, .toolbar select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: white; }
+        .search-input { flex: 1; }
+        
+        /* Vertical Cards Stack */
+        .cards-stack { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; max-height: 560px; padding-right: 4px; }
+        
+        .trip-card { background: white; border: 2px solid #e2e8f0; border-radius: 8px; display: flex; overflow: hidden; transition: all 0.2s ease; cursor: pointer; position: relative; }
+        .trip-card:hover { border-color: #94a3b8; transform: translateY(-1px); }
+        .trip-card.selected { border-color: #0284c7; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
+        
+        .card-thumb { width: 140px; background: #64748b; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; text-align: center; padding: 10px; background-size: cover; background-position: center; }
+        .card-content { padding: 12px 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .card-code { font-family: monospace; font-size: 11px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569; }
+        .card-meta { font-size: 12px; color: #64748b; margin: 4px 0; }
+        .card-price { font-size: 14px; font-weight: 700; color: #0284c7; }
+        
+        .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .selected-badge { font-size: 11px; font-weight: 700; color: #0284c7; display: none; }
+        .trip-card.selected .selected-badge { display: inline-block; }
+
+        /* Right Column: Angular Reactive Form Panel */
+        .editor-panel { padding: 24px; background: #ffffff; display: flex; flex-direction: column; }
+        .editor-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .editor-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+        .form-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; background: #dcfce7; color: #15803d; }
+
+        /* Form Controls & Validation */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; color: #0f172a; outline: none; transition: border-color 0.2s; }
+        .form-control:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        
+        .feedback { font-size: 11px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+        .feedback.valid { color: #16a34a; }
+        .feedback.invalid { color: #dc2626; }
+
+        .form-actions { margin-top: auto; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+        .btn { padding: 9px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
+        .btn-primary { background: #0284c7; color: white; flex: 1; }
+        .btn-primary:hover { background: #0369a1; }
+        .btn-secondary { background: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger-outline { background: transparent; border: 1px solid #fca5a5; color: #dc2626; }
+        .btn-danger-outline:hover { background: #fef2f2; }
+
+        /* Pagination Footer */
+        .pagination-footer { padding: 12px 20px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #64748b; }
+    </style>
 </head>
 <body>
   <app-root>Loading...</app-root>
