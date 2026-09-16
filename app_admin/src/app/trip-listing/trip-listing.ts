@@ -43,8 +43,10 @@ export class TripListing implements OnInit {
 	}
 
 	ngOnInit(): void {
-		console.log("ngOnInit")
-		this.getStuff()
+		var isLoggedIn = this.isLoggedIn();
+		if (isLoggedIn) {
+			this.getStuff()
+		}
 	}
 
 	public isLoggedIn() {

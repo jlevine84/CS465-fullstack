@@ -1,4 +1,4 @@
-import { Service, Injectable, Inject } from '@angular/core';
+import { WritableSignal, signal, Injectable, Inject } from '@angular/core';
 import { BROWSER_STORAGE } from '../storage';
 import { User } from '../models/user';
 import { AuthResponse } from '../models/auth-response';
@@ -10,11 +10,30 @@ import { TripData } from './trip-data';
 
 // Define Auth service
 export class Authentication {
+    // Reactive Signal tracking login state across components
+    public isLoggedInSignal: WritableSignal<boolean> = signal<boolean>(false);
+
     // Storage and service access setup
     constructor(
         @Inject(BROWSER_STORAGE) private storage: Storage,
         private tripData: TripData
-    ) {}
+    ) {
+        // Init signal state on service instantiation
+        this.isLoggedInSignal.set(this.checkTokenValidity())
+    }
+
+    // Check if current token exists and is not expired
+    private checkTokenValidity(): boolean {
+        const token = this.getToken();
+        if (!token) return false;
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.exp > (Date.now() / 1000);
+        } catch (e) {
+            return false;
+        }
+    }
 
     // Variable to handle Auth responses
     authRes: AuthResponse = new AuthResponse()
@@ -34,27 +53,19 @@ export class Authentication {
     // Method to save token from Storage 
     public saveToken(token: string): void {
         this.storage.setItem("travlr-token", token)
+        this.isLoggedInSignal.set(true);
     }
 
     // Method to logout of application and remove token from storage
     public logout(): void {
         this.storage.removeItem("travlr-token")
+        this.isLoggedInSignal.set(false);
     }
 
     /* Accessors and Mutators */
     // Method for verifying if a user is logged in and token is still valid
     public isLoggedIn(): boolean {
-        const currToken: string = this.getToken()
-        
-        // Check if there is a token 
-        if (currToken) {
-            // Has current token, check if it is expired
-            const payload = JSON.parse(atob(currToken.split(".")[1]))
-            return payload.exp > (Date.now() / 1000)
-        } else {
-            // No token
-            return false
-        }
+        return this.isLoggedInSignal();
     }
 
     // Retrieve current user

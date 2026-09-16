@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Authentication } from '../services/authentication';
 import { RouterModule } from '@angular/router';
@@ -18,14 +18,11 @@ export class Title implements OnInit {
 
 	// Vars
     protected readonly title = signal('Travlr Getaways Administrative Dashboard');
+	protected readonly isLoggedIn = computed(()=> this.authenticationService.isLoggedInSignal())
 
 	ngOnInit(): void { }
 
-	public isLoggedIn(): boolean {
-	return this.authenticationService.isLoggedIn()
-	}
-
 	public onLogout(): void {
-	return this.authenticationService.logout()
+		return this.authenticationService.logout()
 	}
 }

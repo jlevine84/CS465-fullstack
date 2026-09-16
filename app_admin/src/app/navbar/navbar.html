@@ -1,19 +1,14 @@
 <div class="navbar">
     <div class="brand"><img src="/assets/images/logo.png"></div>
-    <nav>
-        <a href="#" class="active">Trip Inventory</a>
-        <a href="#">Audit Logs</a>
-        <a href="#">User Management</a>
-    </nav>
-    <div class="navbar-end">
         @if (!isLoggedIn()) {
-            <a class="nav-item" routerLink="login">
-                <span class="has-icon-left">Log In</span>
-            </a>
+            <nav>
+                <a href="/" class="active">Trip Inventory</a>
+                <a href="/">Audit Logs</a>
+                <a href="/">User Management</a>
+            </nav>
         } @else {
-            <a class="nav-item active" (click)="onLogout()" role="button" style="cursor: pointer;">
-                <span class="has-icon-left">Log Out</span>
-            </a>
+            <nav>
+
+            </nav>
         }
-    </div>
 </div>

@@ -15,7 +15,9 @@ export class Navbar implements OnInit {
 		private authenticationService: Authentication
 	) {}
 
-	ngOnInit(): void { }
+	ngOnInit(): void { 
+		this.isLoggedIn();
+	}
 
 	public isLoggedIn(): boolean {
 		return this.authenticationService.isLoggedIn()

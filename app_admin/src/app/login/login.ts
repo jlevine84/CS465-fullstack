@@ -51,6 +51,7 @@ export class Login {
 		
 		if (this.authenticationService.isLoggedIn()) {
 			// console.log('Router::Direct');
+			console.log("Logged in.")
 			this.router.navigate(['']);
 		} else {
 			var timer = setTimeout(() => {
