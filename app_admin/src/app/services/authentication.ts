@@ -59,6 +59,7 @@ export class Authentication {
     // Method to logout of application and remove token from storage
     public logout(): void {
         this.storage.removeItem("travlr-token")
+        this.tripData.resetTrips()
         this.isLoggedInSignal.set(false);
     }
 

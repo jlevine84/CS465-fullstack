@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Authentication } from '../services/authentication';
 import { RouterModule } from '@angular/router';
@@ -15,12 +15,10 @@ export class Navbar implements OnInit {
 		private authenticationService: Authentication
 	) {}
 
+	protected readonly isLoggedIn = computed(()=> this.authenticationService.isLoggedInSignal())
+
 	ngOnInit(): void { 
 		this.isLoggedIn();
-	}
-
-	public isLoggedIn(): boolean {
-		return this.authenticationService.isLoggedIn()
 	}
 
 	public onLogout(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, computed } from '@angular/core';
 import { TripCard } from '../trip-card/trip-card';
 import { Trip } from "../models/trip"
 import { TripData } from '../services/trip-data';
@@ -15,6 +15,8 @@ import { Authentication } from '../services/authentication';
 export class TripListing implements OnInit {
 	trips: WritableSignal<Trip[]> = signal([])
 	message: string = ""
+
+	protected readonly isLoggedIn = computed(()=> this.authenticationService.isLoggedInSignal())
 
 	constructor(
 		private tripData: TripData,
@@ -47,9 +49,5 @@ export class TripListing implements OnInit {
 		if (isLoggedIn) {
 			this.getStuff()
 		}
-	}
-
-	public isLoggedIn() {
-		return this.authenticationService.isLoggedIn();
 	}
 }
