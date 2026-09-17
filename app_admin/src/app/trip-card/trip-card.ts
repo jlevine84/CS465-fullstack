@@ -1,34 +1,28 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { Router } from '@angular/router'
-import { Trip } from "../models/trip"
-import { Authentication } from '../services/authentication';
+import { Trip } from "../models/trip";
 
 @Component({
 	selector: 'app-trip-card',
+	standalone: true,
 	imports: [CurrencyPipe],
 	templateUrl: './trip-card.html',
 	styleUrl: './trip-card.css',
 })
 
 export class TripCard implements OnInit {
-	@Input({ required: true }) trip!: Trip
-	@Output() selectTrip = new EventEmitter<Trip>()
+	// Component inputs & outputs
+	@Input({ required: true }) trip!: Trip;
+	@Output() selectTrip = new EventEmitter<Trip>();
 
+	// Card selection trigger
 	onSelect(): void {
-		this.selectTrip.emit(this.trip)
+		this.selectTrip.emit(this.trip);
 	}
 
-	constructor(
-		private router: Router,
-		private authenticationService: Authentication
-	) {}
+	// Component constructor
+	constructor() {}
 
+	// On init actions
 	ngOnInit(): void { }
-
-	public editTrip(trip: Trip) {
-		localStorage.removeItem("tripCode")
-		localStorage.setItem("tripCode", trip.code)
-		this.router.navigate(["edit-trip"])
-	}
 }

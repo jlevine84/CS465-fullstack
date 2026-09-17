@@ -19,13 +19,16 @@ export class Login implements OnInit {
 	public formError: string = "";
 	submitted = false;
 
+	// Component constructor
 	constructor(
 		private fb: FormBuilder,
 		private router: Router,
 		private authenticationService: Authentication
 	) {}
 
+	// On init actions
 	ngOnInit(): void {
+		// Form control
 		this.loginForm = this.fb.group({
 			name: ['', Validators.required],
 			email: ['', [Validators.required, Validators.email]],
@@ -33,8 +36,10 @@ export class Login implements OnInit {
 		});
 	}
 
+	// Form helper function
 	get f() { return this.loginForm.controls; }
 
+	// Submit Listener
 	public onLoginSubmit(): void {
 		this.submitted = true;
 		this.formError = "";
@@ -47,6 +52,7 @@ export class Login implements OnInit {
 		this.doLogin();
 	}
 
+	// Handle the login
 	private doLogin(): void {
 		const formVal = this.loginForm.value;
 		

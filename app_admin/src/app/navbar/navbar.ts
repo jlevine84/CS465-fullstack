@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { Authentication } from '../services/authentication';
@@ -12,13 +12,16 @@ import { filter, map } from 'rxjs/operators';
 	templateUrl: './navbar.html',
 	styleUrl: './navbar.css',
 })
+
 export class Navbar {
+	// Service injections
 	private router = inject(Router);
 	private authenticationService = inject(Authentication);
 
+	// Auth check
 	protected readonly isLoggedIn = computed(() => this.authenticationService.isLoggedInSignal());
 
-	// Reactive Signal tracking the current active URL path
+	// Reactive Signal tracking current active URL path
 	private currentUrl = toSignal(
 		this.router.events.pipe(
 			filter(e => e instanceof NavigationEnd),
@@ -27,12 +30,13 @@ export class Navbar {
 		{ initialValue: this.router.url }
 	);
 
-	// Returns true if on the inventory list OR adding a new trip
+	// Returns true if on inventory list OR adding/editing a trip
 	protected isTripRoute = computed(() => {
 		const url = this.currentUrl();
 		return url === '/' || url === '/add-trip' || url.startsWith('/trips');
 	});
 
+	// Handle logout action
 	public onLogout(): void {
 		this.authenticationService.logout();
 	}

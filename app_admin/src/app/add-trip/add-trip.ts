@@ -12,12 +12,16 @@ import { Authentication } from '../services/authentication';
     templateUrl: './add-trip.html',
     styleUrl: './add-trip.css'
 })
+
 export class AddTrip implements OnInit {
+    // Component variables
     addForm!: FormGroup;
     submitted = false;
 
+    // Signal check
     protected readonly isLoggedIn = computed(() => this.authenticationService.isLoggedInSignal());
 
+    // Component constructor
     constructor(
         private formBuilder: FormBuilder,
         private router: Router,
@@ -25,7 +29,9 @@ export class AddTrip implements OnInit {
         private authenticationService: Authentication
     ) {}
 
+    // On init actions
     ngOnInit(): void {
+        // Form control setup with validation rules
         this.addForm = this.formBuilder.group({
             _id: [],
             code: ['', [Validators.required, Validators.pattern(/^[A-Z]{4}[0-9]{3,6}$/)]],
@@ -39,6 +45,7 @@ export class AddTrip implements OnInit {
         });
     }
 
+    // Submit listener
     public onSubmit(): void {
         this.submitted = true;
         
@@ -55,8 +62,10 @@ export class AddTrip implements OnInit {
         }
     }
 
+    // Form helper getter
     get f() { return this.addForm.controls; }
 
+    // Cancel action
     public cancelBtn(): void {
         this.router.navigate(["/"]);
     }
