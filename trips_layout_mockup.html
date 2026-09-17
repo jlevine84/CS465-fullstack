@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travlr Admin - Split Card & Reactive Form Layout</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f1f5f9; color: #334155; padding: 24px; }
+        
+        /* Page Header */
+        .page-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 22px; color: #0f172a; }
+        .page-header .subtitle { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+        /* App Shell */
+        .app-shell { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+        
+        /* Top Navigation Bar */
+        .navbar { background: #1e293b; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .brand { font-weight: 700; font-size: 16px; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .navbar nav { display: flex; gap: 20px; font-size: 14px; }
+        .navbar nav a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
+        .navbar nav a.active { color: white; font-weight: 600; border-bottom: 2px solid #38bdf8; padding-bottom: 4px; }
+
+        /* Main Workspace Split Layout */
+        .workspace-split { display: grid; grid-template-columns: 1fr 420px; min-height: 680px; }
+        
+        /* Left Column: Cards List & Controls */
+        .inventory-panel { padding: 20px; border-right: 1px solid #e2e8f0; background: #f8fafc; display: flex; flex-direction: column; gap: 16px; }
+        .toolbar { display: flex; gap: 10px; justify-content: space-between; }
+        .toolbar input, .toolbar select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: white; }
+        .search-input { flex: 1; }
+        
+        /* Vertical Cards Stack */
+        .cards-stack { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; max-height: 560px; padding-right: 4px; }
+        
+        .trip-card { background: white; border: 2px solid #e2e8f0; border-radius: 8px; display: flex; overflow: hidden; transition: all 0.2s ease; cursor: pointer; position: relative; }
+        .trip-card:hover { border-color: #94a3b8; transform: translateY(-1px); }
+        .trip-card.selected { border-color: #0284c7; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
+        
+        .card-thumb { width: 140px; background: #64748b; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; text-align: center; padding: 10px; background-size: cover; background-position: center; }
+        .card-content { padding: 12px 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .card-code { font-family: monospace; font-size: 11px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569; }
+        .card-meta { font-size: 12px; color: #64748b; margin: 4px 0; }
+        .card-price { font-size: 14px; font-weight: 700; color: #0284c7; }
+        
+        .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .selected-badge { font-size: 11px; font-weight: 700; color: #0284c7; display: none; }
+        .trip-card.selected .selected-badge { display: inline-block; }
+
+        /* Right Column: Angular Reactive Form Panel */
+        .editor-panel { padding: 24px; background: #ffffff; display: flex; flex-direction: column; }
+        .editor-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .editor-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+        .form-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 12px; background: #dcfce7; color: #15803d; }
+
+        /* Form Controls & Validation */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; color: #0f172a; outline: none; transition: border-color 0.2s; }
+        .form-control:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        
+        .feedback { font-size: 11px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+        .feedback.valid { color: #16a34a; }
+        .feedback.invalid { color: #dc2626; }
+
+        .form-actions { margin-top: auto; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+        .btn { padding: 9px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
+        .btn-primary { background: #0284c7; color: white; flex: 1; }
+        .btn-primary:hover { background: #0369a1; }
+        .btn-secondary { background: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger-outline { background: transparent; border: 1px solid #fca5a5; color: #dc2626; }
+        .btn-danger-outline:hover { background: #fef2f2; }
+
+        /* Pagination Footer */
+        .pagination-footer { padding: 12px 20px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div>
+            <h1>Travlr Getaways Administrative Dashboard</h1>
+            <div class="subtitle">Proposed SPA Enhancement: Card-Selection Integrated with Reactive Form State Management</div>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <!-- Navigation -->
+        <div class="navbar">
+            <div class="brand"><span>🌴</span> Travlr Getaways Admin</div>
+            <nav>
+                <a href="#" class="active">Trip Inventory</a>
+                <a href="#">Audit Logs</a>
+                <a href="#">User Management</a>
+            </nav>
+        </div>
+
+        <!-- Workspace Split -->
+        <div class="workspace-split">
+            
+            <!-- LEFT PANEL: Visual Card Stack (Selection Source) -->
+            <div class="inventory-panel">
+                <div class="toolbar">
+                    <input type="text" class="search-input" placeholder="Search by name or code...">
+                    <select><option>Sort By: Name</option><option>Sort By: Price</option></select>
+                    <button class="btn btn-primary" style="flex: initial;">+ New Trip</button>
+                </div>
+
+                <div class="cards-stack">
+                    
+                    <!-- Card 1 (Active / Selected) -->
+                    <div class="trip-card selected">
+                        <div class="card-thumb" style="background-color: #0284c7;">Gale Reef Image</div>
+                        <div class="card-content">
+                            <div>
+                                <div class="card-header-row">
+                                    <div class="card-title">Gale Reef</div>
+                                    <span class="card-code">GALERE001</span>
+                                </div>
+                                <div class="card-meta">4 Nights / 5 Days</div>
+                                <div class="card-price">$799.00 / person</div>
+                            </div>
+                            <div class="card-actions">
+                                <span class="selected-badge">● Currently Editing</span>
+                                <button class="btn btn-danger-outline" style="padding: 3px 8px; font-size: 11px;">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="trip-card">
+                        <div class="card-thumb" style="background-color: #0d9488;">Dawson's Reef Image</div>
+                        <div class="card-content">
+                            <div>
+                                <div class="card-header-row">
+                                    <div class="card-title">Dawson's Reef</div>
+                                    <span class="card-code">DAWSR002</span>
+                                </div>
+                                <div class="card-meta">4 Nights / 5 Days</div>
+                                <div class="card-price">$1,199.00 / person</div>
+                            </div>
+                            <div class="card-actions">
+                                <span class="selected-badge">● Currently Editing</span>
+                                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 11px;">Select to Edit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="trip-card">
+                        <div class="card-thumb" style="background-color: #4f46e5;">Claire's Reef Image</div>
+                        <div class="card-content">
+                            <div>
+                                <div class="card-header-row">
+                                    <div class="card-title">Claire's Reef</div>
+                                    <span class="card-code">CLAIR003</span>
+                                </div>
+                                <div class="card-meta">4 Nights / 5 Days</div>
+                                <div class="card-price">$1,999.00 / person</div>
+                            </div>
+                            <div class="card-actions">
+                                <span class="selected-badge">● Currently Editing</span>
+                                <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 11px;">Select to Edit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Angular Reactive Form Editor (Target Destination) -->
+            <div class="editor-panel">
+                <div class="editor-header">
+                    <div>
+                        <div class="editor-title">Edit Package: Gale Reef</div>
+                        <div style="font-size: 11px; color: #64748b;">Target Code: <code>GALERE001</code></div>
+                    </div>
+                    <span class="form-status">Form Status: VALID</span>
+                </div>
+
+                <form onsubmit="return false;">
+                    <div class="form-group">
+                        <label>Trip Code (Regex Validated) *</label>
+                        <input type="text" class="form-control" value="GALERE001">
+                        <div class="feedback valid">✓ Matched Pattern: <code>^[A-Z]{4}[0-9]{6}$</code></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Package Name *</label>
+                        <input type="text" class="form-control" value="Gale Reef">
+                        <div class="feedback valid">✓ Required field populated</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Price Per Person ($) *</label>
+                        <input type="number" class="form-control" value="799.00">
+                        <div class="feedback valid">✓ Numeric minimum checked ($ > 0.00)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Duration / Length *</label>
+                        <input type="text" class="form-control" value="4 nights / 5 days">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Start Date (Future Date Enforcement) *</label>
+                        <input type="date" class="form-control" value="2026-10-15">
+                        <div class="feedback valid">✓ Date occurs in the future</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary">Save Package Modifications</button>
+                        <button class="btn btn-secondary">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Pagination Footer (Illustrating Category 2 Server-Side Pagination) -->
+        <div class="pagination-footer">
+            <div>Displaying 1 - 3 of 24 Total Travel Packages</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">&lt; Previous Page</button>
+                <span>Page 1 of 8</span>
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Next Page &gt;</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,3 +1,4 @@
+@if (isLoggedIn()) { 
 <div class="workspace-split">
     <div class="inventory-panel">
         <div class="toolbar">
@@ -5,17 +6,13 @@
             <select><option>Sort By: Name</option><option>Sort By: Price</option></select>
             <button class="btn btn-primary" (click)="addTrip()" style="flex: initial;">+ New Trip</button>
         </div>
-        <div class="cards-stack">
-            @if (isLoggedIn()) {  
-                @for (t of trips(); track t.code) {
-                    <app-trip-card [trip]="t"/>
-                }
-            } @else {
-                <div></div>
-            }
+        <div class="cards-stack">   
+            @for (t of trips(); track t.code) {
+                <app-trip-card [trip]="t"/>
+            }           
         </div>
     </div>
-    <div class="editor-panel">
+    <div class="editor-panel">            
         <div class="editor-header">
             <div>
                 <div class="editor-title">Edit Package: Gale Reef</div>
@@ -58,7 +55,7 @@
                 <button class="btn btn-primary">Save Package Modifications</button>
                 <button class="btn btn-secondary">Reset</button>
             </div>
-        </form>
+        </form>      
     </div>
     <div class="pagination-footer">
         <div>Displaying 1 - 3 of 24 Total Travel Packages</div>
@@ -69,3 +66,4 @@
         </div>
     </div>
 </div>
+} @else { <div class="workplace-split"></div> }

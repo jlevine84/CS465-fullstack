@@ -54,4 +54,8 @@ export class AddTrip implements OnInit {
 
     // get the form short name to access the form fields
     get f() { return this.addForm.controls; }
+
+    public cancelBtn(): void {
+		this.router.navigate(["/"])
+	}
 }

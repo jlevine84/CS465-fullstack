@@ -57,6 +57,7 @@ const login = (req, res)=> {
             // If auth succeeded, generate a token and return it
             if (user) { 
                 const token = user.generateJWT()
+                console.log("Login Successful.")
                 return res.status(200).json({token})
             }
 

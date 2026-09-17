@@ -11,7 +11,7 @@ const tripsList = async(req, res)=> {
             .find({})
             .exec()
 
-        console.log(query)
+        // console.log(query)
 
         // If no query response
         if(!query || query.length === 0) {
@@ -38,7 +38,7 @@ const tripsFindByCode = async(req, res)=> {
             .find({"code": req.params.tripCode})
             .exec()
 
-        console.log(query)
+        // console.log(query)
 
         // If no query response
         if(!query || query.length === 0) {
