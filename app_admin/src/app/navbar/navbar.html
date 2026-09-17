@@ -1,14 +1,18 @@
 <div class="navbar">
-    <div class="brand"><img src="/assets/images/logo.png"></div>
+    <div class="brand">
+        <img src="/assets/images/logo.png" alt="Travlr Logo">
+    </div>
+    <nav>
         @if (isLoggedIn()) {
-            <nav>
-                <a href="/" class="active">Trip Inventory</a>
-                <a href="/logs">Audit Logs</a>
-                <a href="/users">User Management</a>
-            </nav>
-        } @else {
-            <nav>
-
-            </nav>
+            <a [routerLink]="['/']" [class.active]="isTripRoute()">
+                Trip Inventory
+            </a>
+            <a routerLink="/logs" routerLinkActive="active">
+                Audit Logs
+            </a>
+            <a routerLink="/users" routerLinkActive="active">
+                User Management
+            </a>
         }
+    </nav>
 </div>

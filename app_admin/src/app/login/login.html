@@ -1,12 +1,10 @@
 <div class="login-container">
     <div class="login-card">
-        <!-- Header -->
         <div class="login-header">
             <p class="login-subtitle">Sign in to access the Travlr Getaways Admin Panel</p>
         </div>
 
-        <!-- Form -->
-        <form (ngSubmit)="onLoginSubmit()" class="login-form">
+        <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()" class="login-form">
             
             @if (formError) {
                 <div role="alert" class="alert-danger">
@@ -15,33 +13,50 @@
             }
 
             <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name">Name *</label>
                 <input type="text" 
                        id="name"
-                       name="name" 
+                       formControlName="name" 
                        class="form-control" 
-                       placeholder="Enter Name" 
-                       [(ngModel)]="credentials.name">
+                       placeholder="Enter Name"
+                       [class.is-invalid]="submitted && f['name'].errors">
+                @if (submitted && f['name'].errors) {
+                    <div class="error-msg">
+                        @if (f['name'].errors?.['required']) { Name is required }
+                    </div>
+                }
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">Email Address *</label>
                 <input type="email" 
                        id="email"
-                       name="email" 
+                       formControlName="email" 
                        class="form-control" 
-                       placeholder="Enter email address" 
-                       [(ngModel)]="credentials.email">
+                       placeholder="Enter email address"
+                       [class.is-invalid]="submitted && f['email'].errors">
+                @if (submitted && f['email'].errors) {
+                    <div class="error-msg">
+                        @if (f['email'].errors?.['required']) { Email is required }
+                        @if (f['email'].errors?.['email']) { Please enter a valid email address }
+                    </div>
+                }
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">Password *</label>
                 <input type="password" 
                        id="password" 
-                       name="password" 
+                       formControlName="password" 
                        class="form-control" 
-                       placeholder="e.g 12+ alphanumerics" 
-                       [(ngModel)]="credentials.password">
+                       placeholder="e.g. 12+ alphanumerics"
+                       [class.is-invalid]="submitted && f['password'].errors">
+                @if (submitted && f['password'].errors) {
+                    <div class="error-msg">
+                        @if (f['password'].errors?.['required']) { Password is required }
+                        @if (f['password'].errors?.['minlength']) { Minimum 6 characters required }
+                    </div>
+                }
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">

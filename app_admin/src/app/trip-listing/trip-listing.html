@@ -12,8 +12,8 @@
             @for (t of trips(); track t.code) {
                 <app-trip-card 
                     [trip]="t" 
-                    [class.active]="selectedTrip()?.code === t.code"
-                    (selectTrip)="onTripSelect($event)" />
+                    [class.selected]="selectedTrip()?.code === t.code"
+                    (click)="onTripSelect(t)" />
             }           
         </div>
     </div>

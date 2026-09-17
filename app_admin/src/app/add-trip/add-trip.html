@@ -1,5 +1,7 @@
+@if (isLoggedIn()) {
+
+
 <div class="card-container">
-    <!-- Header Section -->
     <div class="card-header">
         <div class="header-title">
             <h3>Add New Trip Package</h3>
@@ -7,7 +9,6 @@
         <span class="badge-tag">Inventory Management</span>
     </div>
 
-    <!-- Form Body -->
     <div class="card-body">
         @if (addForm) {
             <form [formGroup]="addForm" (ngSubmit)="onSubmit()" class="form-layout">
@@ -25,6 +26,7 @@
                         @if (submitted && f['code'].errors) {
                             <div class="error-msg">
                                 @if (f['code'].errors?.['required']) { Trip Code is required }
+                                @if (f['code'].errors?.['pattern']) { Code must be 4 uppercase letters + digits (e.g., GALERE001) }
                             </div>
                         }
                     </div>
@@ -40,6 +42,7 @@
                         @if (submitted && f['name'].errors) {
                             <div class="error-msg">
                                 @if (f['name'].errors?.['required']) { Name is required }
+                                @if (f['name'].errors?.['minlength']) { Must be at least 3 characters }
                             </div>
                         }
                     </div>
@@ -96,7 +99,7 @@
 
                     <div class="form-group">
                         <label for="perPerson">Price Per Person ($) *</label>
-                        <input type="text" 
+                        <input type="number" 
                                id="perPerson" 
                                formControlName="perPerson" 
                                placeholder="799.00" 
@@ -105,6 +108,7 @@
                         @if (submitted && f['perPerson'].errors) {
                             <div class="error-msg">
                                 @if (f['perPerson'].errors?.['required']) { Price is required }
+                                @if (f['perPerson'].errors?.['min']) { Price must be greater than 0 }
                             </div>
                         }
                     </div>
@@ -137,6 +141,7 @@
                         @if (submitted && f['description'].errors) {
                             <div class="error-msg">
                                 @if (f['description'].errors?.['required']) { Description is required }
+                                @if (f['description'].errors?.['minlength']) { Description must be at least 10 characters }
                             </div>
                         }
                     </div>
@@ -152,3 +157,4 @@
         }
     </div>
 </div>
+}

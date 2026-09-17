@@ -1,0 +1,14 @@
+.navbar nav a {
+    color: #e3a42e;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Active route styling */
+.navbar nav a.active {
+    color: #3ebfff;
+    font-weight: 700;
+    border-bottom: 2px solid #0284c7;
+}

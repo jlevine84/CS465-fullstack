@@ -1,27 +1,39 @@
-import { Component, computed, OnInit } from '@angular/core';
+import { Component, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { Authentication } from '../services/authentication';
-import { RouterModule } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-navbar',
+	standalone: true,
 	imports: [CommonModule, RouterModule],
 	templateUrl: './navbar.html',
 	styleUrl: './navbar.css',
 })
+export class Navbar {
+	private router = inject(Router);
+	private authenticationService = inject(Authentication);
 
-export class Navbar implements OnInit {
-	constructor(
-		private authenticationService: Authentication
-	) {}
+	protected readonly isLoggedIn = computed(() => this.authenticationService.isLoggedInSignal());
 
-	protected readonly isLoggedIn = computed(()=> this.authenticationService.isLoggedInSignal())
+	// Reactive Signal tracking the current active URL path
+	private currentUrl = toSignal(
+		this.router.events.pipe(
+			filter(e => e instanceof NavigationEnd),
+			map((e: NavigationEnd) => e.urlAfterRedirects)
+		),
+		{ initialValue: this.router.url }
+	);
 
-	ngOnInit(): void { 
-		this.isLoggedIn();
-	}
+	// Returns true if on the inventory list OR adding a new trip
+	protected isTripRoute = computed(() => {
+		const url = this.currentUrl();
+		return url === '/' || url === '/add-trip' || url.startsWith('/trips');
+	});
 
 	public onLogout(): void {
-		return this.authenticationService.logout()
+		this.authenticationService.logout();
 	}
 }
