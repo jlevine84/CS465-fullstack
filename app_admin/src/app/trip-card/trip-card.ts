@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router'
 import { Trip } from "../models/trip"
@@ -11,8 +11,13 @@ import { Authentication } from '../services/authentication';
 	styleUrl: './trip-card.css',
 })
 
-export class TripCard implements OnInit{
-	@Input("trip") trip: any
+export class TripCard implements OnInit {
+	@Input({ required: true }) trip!: Trip
+	@Output() selectTrip = new EventEmitter<Trip>()
+
+	onSelect(): void {
+		this.selectTrip.emit(this.trip)
+	}
 
 	constructor(
 		private router: Router,

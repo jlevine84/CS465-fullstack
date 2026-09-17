@@ -1,69 +1,124 @@
 @if (isLoggedIn()) { 
 <div class="workspace-split">
+    <!-- Inventory Panel -->
     <div class="inventory-panel">
         <div class="toolbar">
             <input type="text" class="search-input" placeholder="Search by name or code...">
             <select><option>Sort By: Name</option><option>Sort By: Price</option></select>
             <button class="btn btn-primary" (click)="addTrip()" style="flex: initial;">+ New Trip</button>
         </div>
+        
         <div class="cards-stack">   
             @for (t of trips(); track t.code) {
-                <app-trip-card [trip]="t"/>
+                <app-trip-card 
+                    [trip]="t" 
+                    [class.active]="selectedTrip()?.code === t.code"
+                    (selectTrip)="onTripSelect($event)" />
             }           
         </div>
     </div>
+
+    <!-- Editor Panel -->
     <div class="editor-panel">            
-        <div class="editor-header">
-            <div>
-                <div class="editor-title">Edit Package: Gale Reef</div>
-                <div style="font-size: 11px; color: #64748b;">Target Code: <code>GALERE001</code></div>
-            </div>
-            <span class="form-status">Form Status: VALID</span>
-        </div>
-
-        <form onsubmit="return false;">
-            <div class="form-group">
-                <label>Trip Code (Regex Validated) *</label>
-                <input type="text" class="form-control" value="GALERE001">
-                <div class="feedback valid">✓ Matched Pattern: <code>^[A-Z]4[0-9]6$</code></div>
+        @if (selectedTrip(); as selected) {
+            <div class="editor-header">
+                <div>
+                    <div class="editor-title">Edit Package: {{ selected.name }}</div>
+                    <div style="font-size: 11px; color: #64748b;">Target Code: <code>{{ selected.code }}</code></div>
+                </div>
+                <span class="form-status" [class.valid]="editForm.valid" [class.invalid]="editForm.invalid">
+                    Form Status: {{ editForm.valid ? 'VALID' : 'INVALID' }}
+                </span>
             </div>
 
-            <div class="form-group">
-                <label>Package Name *</label>
-                <input type="text" class="form-control" value="Gale Reef">
-                <div class="feedback valid">✓ Required field populated</div>
-            </div>
+            <form [formGroup]="editForm" (ngSubmit)="onSave()">
+                
+                <div class="form-group">
+                    <label>Trip Code *</label>
+                    <input type="text" formControlName="code" class="form-control" [class.is-invalid]="submitted && f['code'].errors" readonly>
+                    @if (submitted && f['code'].errors) {
+                        <div class="feedback invalid">Trip Code is required</div>
+                    }
+                </div>
 
-            <div class="form-group">
-                <label>Price Per Person ($) *</label>
-                <input type="number" class="form-control" value="799.00">
-                <div class="feedback valid">✓ Numeric minimum checked ($ > 0.00)</div>
-            </div>
+                <div class="form-group">
+                    <label>Package Name *</label>
+                    <input type="text" formControlName="name" class="form-control" [class.is-invalid]="submitted && f['name'].errors">
+                    @if (submitted && f['name'].errors) {
+                        <div class="feedback invalid">Package Name is required</div>
+                    }
+                </div>
 
-            <div class="form-group">
-                <label>Duration / Length *</label>
-                <input type="text" class="form-control" value="4 nights / 5 days">
-            </div>
+                <div class="form-group">
+                    <label>Resort / Destination *</label>
+                    <input type="text" formControlName="resort" class="form-control" [class.is-invalid]="submitted && f['resort'].errors">
+                    @if (submitted && f['resort'].errors) {
+                        <div class="feedback invalid">Resort name is required</div>
+                    }
+                </div>
 
-            <div class="form-group">
-                <label>Start Date (Future Date Enforcement) *</label>
-                <input type="date" class="form-control" value="2026-10-15">
-                <div class="feedback valid">✓ Date occurs in the future</div>
-            </div>
+                <div class="form-group">
+                    <label>Price Per Person ($) *</label>
+                    <input type="number" formControlName="perPerson" class="form-control" [class.is-invalid]="submitted && f['perPerson'].errors">
+                    @if (submitted && f['perPerson'].errors) {
+                        <div class="feedback invalid">Price is required and must be greater than 0</div>
+                    }
+                </div>
 
-            <div class="form-actions">
-                <button class="btn btn-primary">Save Package Modifications</button>
-                <button class="btn btn-secondary">Reset</button>
+                <div class="form-group">
+                    <label>Duration / Length *</label>
+                    <input type="text" formControlName="length" class="form-control" [class.is-invalid]="submitted && f['length'].errors">
+                    @if (submitted && f['length'].errors) {
+                        <div class="feedback invalid">Duration is required</div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" formControlName="start" class="form-control" [class.is-invalid]="submitted && f['start'].errors">
+                    @if (submitted && f['start'].errors) {
+                        <div class="feedback invalid">Start date is required</div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Image Filename *</label>
+                    <input type="text" formControlName="image" class="form-control" [class.is-invalid]="submitted && f['image'].errors">
+                    @if (submitted && f['image'].errors) {
+                        <div class="feedback invalid">Image filename is required</div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea formControlName="description" class="form-control" rows="3" [class.is-invalid]="submitted && f['description'].errors"></textarea>
+                    @if (submitted && f['description'].errors) {
+                        <div class="feedback invalid">Description is required</div>
+                    }
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Package Modifications</button>
+                    <button type="button" class="btn btn-secondary" (click)="onReset()">Reset</button>
+                </div>
+            </form>
+        } @else {
+            <div class="no-selection-placeholder">
+                <p>Select a trip package from the left list to view or edit details.</p>
             </div>
-        </form>      
+        }
     </div>
+
+    <!-- Footer -->
     <div class="pagination-footer">
-        <div>Displaying 1 - 3 of 24 Total Travel Packages</div>
+        <div>Displaying 1 - {{ trips().length }} of {{ trips().length }} Total Travel Packages</div>
         <div style="display: flex; gap: 8px; align-items: center;">
             <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">&lt; Previous Page</button>
-            <span>Page 1 of 8</span>
+            <span>Page 1 of 1</span>
             <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px;">Next Page &gt;</button>
         </div>
     </div>
 </div>
-} @else { <div class="workplace-split"></div> }
+} @else { 
+    <div class="workplace-split"></div> 
+}

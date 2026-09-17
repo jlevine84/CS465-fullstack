@@ -1,1 +1,71 @@
-<p>user-listing works!</p>
+<div class="row g-0">
+    <!-- Left Side: User Table -->
+    <div class="col-md-7 border-end p-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">System Users</h5>
+            <input type="text" class="form-control form-control-sm w-50" placeholder="Search accounts...">
+        </div>
+        <table class="table table-hover bg-white rounded border align-middle small">
+            <thead class="table-light">
+                <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>Admin User</strong><br>
+                        <span class="text-muted">admin@travlr.com</span>
+                    </td>
+                    <td><span class="badge bg-primary">Administrator</span></td>
+                    <td><span class="badge bg-success-subtle text-success">Active</span></td>
+                    <td><button class="btn btn-sm btn-outline-secondary">Edit</button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Jane Doe</strong><br>
+                        <span class="text-muted">jane@travlr.com</span>
+                    </td>
+                    <td><span class="badge bg-secondary">Editor</span></td>
+                    <td><span class="badge bg-success-subtle text-success">Active</span></td>
+                    <td><button class="btn btn-sm btn-outline-secondary">Edit</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Right Side: Account Creation Form -->
+    <div class="col-md-5 p-4 bg-white">
+        <h5 class="fw-bold mb-3 border-bottom pb-2">Create New Account</h5>
+        <form onsubmit="return false;">
+            <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Full Name *</label>
+                <input type="text" class="form-control form-control-sm" placeholder="e.g. Jane Doe">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Email Address *</label>
+                <input type="email" class="form-control form-control-sm" placeholder="name@travlr.com">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Account Role *</label>
+                <select class="form-select form-select-sm">
+                    <option>Editor</option>
+                    <option>Administrator</option>
+                    <option>Viewer</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold text-secondary">Temporary Password *</label>
+                <input type="password" class="form-control form-control-sm">
+            </div>
+            <div class="d-flex gap-2 mt-4 pt-2 border-top">
+                <button class="btn btn-primary btn-sm flex-grow-1">Create Account</button>
+                <button class="btn btn-secondary btn-sm">Reset</button>
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -1,0 +1,26 @@
+.feedback.valid {
+    color: #16a34a;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.feedback.invalid {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.form-status.valid {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.form-status.invalid {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.form-control.is-invalid {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+}
