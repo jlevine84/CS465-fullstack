@@ -1,65 +1,53 @@
 // Reqs and var init
-const mongoose = require("mongoose")
-require("../models/trip") // Ensures schema is loaded into Mongoose memory
-const Model = mongoose.model("trips") // Unified model reference for all CRUD operations
+const mongoose = require("mongoose");
+require("../models/trip"); // Ensures schema is loaded into Mongoose memory
+require("../models/log");  // Ensures audit log schema is loaded
+const Model = mongoose.model("trips"); // Unified model reference for all CRUD operations
+const Log = mongoose.model("logs");   // Audit log model reference
 
-// GET endpoint: /trips - get a list of all trips
-const tripsList = async(req, res)=> {
+// GET endpoint: /trips - Get a list of all trips
+const tripsList = async (req, res) => {
     try {
         const query = await Model
-            // Find all trip records
             .find({})
-            .exec()
-
-        // console.log(query)
+            .exec();
 
         // If no query response
-        if(!query || query.length === 0) {
-            // return error
-            return res.status(404).json({ error: "No trips found." })
+        if (!query || query.length === 0) {
+            return res.status(404).json({ error: "No trips found." });
         }
 
-        // Else, query successful
-        else {
-            // return all trips
-            return res.status(200).json(query)
-        }
+        // Return all trips
+        return res.status(200).json(query);
     } catch (err) {
         console.error("Error retrieving trips:", err);
         return res.status(500).json({ error: err.message });
     }
-}
+};
 
-// GET endpoint: /trips/{code} - Single list by code
-const tripsFindByCode = async(req, res)=> {
+// GET endpoint: /trips/{code} - Single trip by code
+const tripsFindByCode = async (req, res) => {
     try {
         const query = await Model
-            // Find single trip by code
-            .find({"code": req.params.tripCode})
-            .exec()
-
-        // console.log(query)
+            .find({ "code": req.params.tripCode })
+            .exec();
 
         // If no query response
-        if(!query || query.length === 0) {
-            // return error
-            return res.status(404).json({ error: "Trip not found with provided code." })
+        if (!query || query.length === 0) {
+            return res.status(404).json({ error: "Trip not found with provided code." });
         }
 
-        // Else, query successful
-        else {
-            return res.status(200).json(query)
-        }
+        return res.status(200).json(query);
     } catch (err) {
         console.error("Error finding trip by code:", err);
         return res.status(500).json({ error: err.message });
     }
-}
+};
 
 // POST endpoint: /trips - Add a new trip
-const tripsAddTrip = async(req, res) => {
+const tripsAddTrip = async (req, res) => {
     try {
-        // Instantiate a new trip record using the Mongoose model mapping
+        // Instantiate a new trip record
         const newTrip = new Model({
             code: req.body.code,
             name: req.body.name,
@@ -73,23 +61,38 @@ const tripsAddTrip = async(req, res) => {
 
         // Save to MongoDB
         const savedTrip = await newTrip.save();
-        
-        // Return 201 Created status with the newly saved document
+
+        // Generate audit log record
+        await Log.create({
+            user: req.user ? req.user.email : "System",
+            action: "CREATE",
+            endpoint: `POST /api/trips`,
+            status: "201 Created",
+            description: `Created new trip package: ${savedTrip.code}`,
+            details: { code: savedTrip.code, name: savedTrip.name }
+        });
+
+        // Return 201 Created status
         return res.status(201).json(savedTrip);
 
     } catch (err) {
-        // If validation fails or database hits a snag, catch the error
         console.error("Error creating trip:", err);
         return res.status(400).json({ error: err.message });
     }
-}
+};
 
-// PUT endpoint: /trips/{code} - Edit a specific trip.
-const tripsUpdateTrip = async(req, res)=> {
+// PUT endpoint: /trips/{code} - Edit a specific trip
+const tripsUpdateTrip = async (req, res) => {
     try {
         console.log("Locating and updating trip code:", req.params.tripCode);
-        console.log("Payload content:", req.body);
         
+        // Find existing record first to compare values for audit logging
+        const existingTrip = await Model.findOne({ "code": req.params.tripCode }).exec();
+
+        if (!existingTrip) {
+            return res.status(404).json({ error: "Trip code not found to update." });
+        }
+
         const query = await Model.findOneAndUpdate(
             { "code": req.params.tripCode },
             {
@@ -102,27 +105,60 @@ const tripsUpdateTrip = async(req, res)=> {
                 image: req.body.image,
                 description: req.body.description
             },
-            { new: true, runValidators: true } // Returns the freshly updated document and runs safety validation checks
-        ).exec()
+            { new: true, runValidators: true }
+        ).exec();
 
-        console.log("Database update response:", query);
+        // Generate audit log record tracking price or general modification
+        await Log.create({
+            user: req.user ? req.user.email : "System",
+            action: "UPDATE",
+            endpoint: `PUT /api/trips/${req.params.tripCode}`,
+            status: "200 OK",
+            description: `Modified details for package ${query.code}`,
+            details: {
+                previousPrice: existingTrip.perPerson,
+                updatedPrice: query.perPerson
+            }
+        });
 
-        // If no query response matched the parameters
-        if (!query) {
-            // return error
-            return res.status(404).json({ error: "Trip code not found to update." });
-        } 
-        
-        // Else, query successful
-        else {
-            // return updated trip
-            return res.status(200).json(query);
-        }
+        return res.status(200).json(query);
+
     } catch (err) {
-        // If validation fails or database hits a snag, catch the error
         console.error("Error updating trip:", err);
         return res.status(400).json({ error: err.message });
     }
-}
+};
 
-module.exports = { tripsList, tripsFindByCode, tripsAddTrip, tripsUpdateTrip }
+// DELETE endpoint: /trips/{code} - Delete a specific trip
+const tripsDeleteTrip = async (req, res) => {
+    try {
+        const deletedTrip = await Model.findOneAndDelete({ "code": req.params.tripCode }).exec();
+
+        if (!deletedTrip) {
+            return res.status(404).json({ error: "Trip code not found to delete." });
+        }
+
+        // Generate audit log record
+        await Log.create({
+            user: req.user ? req.user.email : "System",
+            action: "DELETE",
+            endpoint: `DELETE /api/trips/${req.params.tripCode}`,
+            status: "200 OK",
+            description: `Deleted trip package: ${req.params.tripCode}`
+        });
+
+        return res.status(200).json({ message: "Trip successfully deleted.", code: req.params.tripCode });
+
+    } catch (err) {
+        console.error("Error deleting trip:", err);
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = { 
+    tripsList, 
+    tripsFindByCode, 
+    tripsAddTrip, 
+    tripsUpdateTrip,
+    tripsDeleteTrip 
+};
