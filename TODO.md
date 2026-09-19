@@ -33,7 +33,9 @@ Enhancement Plan: To complement the refactored admin dashboard, I will replace t
 ## Database & Security
 - Data propagation
 - Access control enhancements
-- Create Logs schema
-- User Management schema
+    - Middleware setup
+- Create Logs schema // Done
+- User Management schema update // Done
+- controller and route updates
 
 Enhancement Plan: I will expand the database layer to support enterprise audit logs and scalable user relationships. I will create a dedicated AuditLog schema to record every administrative CRUD action (capturing adminId, actionType, targetTripCode, and timestamp). Additionally, I will enforce Mongoose schema validation rules on incoming modifications, create compound indexes on audit and trip queries, and update middleware to guarantee administrative actions are logged automatically upon write execution.
