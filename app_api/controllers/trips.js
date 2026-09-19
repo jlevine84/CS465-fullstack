@@ -1,6 +1,6 @@
 // Reqs and var init
 const mongoose = require("mongoose")
-require("../models/travlr") // Ensures schema is loaded into Mongoose memory
+require("../models/trip") // Ensures schema is loaded into Mongoose memory
 const Model = mongoose.model("trips") // Unified model reference for all CRUD operations
 
 // GET endpoint: /trips - get a list of all trips
